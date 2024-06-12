@@ -1,0 +1,15 @@
+{
+  "hash": "8dd2e710a876fc73ecff148eabc5ffe9",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\ntitle: \"Challenge3_Automated_ML_1and2\"\nauthor: \"LukasMackel\"\ndate: \"2024-06-11\"\noutput: html_document\n---\n\n\n# Part 1\nSetup h2o :\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(h2o)\n```\n\n::: {.cell-output .cell-output-stderr}\n\n```\n\n----------------------------------------------------------------------\n\nYour next step is to start H2O:\n    > h2o.init()\n\nFor H2O package documentation, ask for help:\n    > ??h2o\n\nAfter starting H2O, you can use the Web UI at http://localhost:54321\nFor more information visit https://docs.h2o.ai\n\n----------------------------------------------------------------------\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\n\nAttache Paket: 'h2o'\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nDie folgenden Objekte sind maskiert von 'package:stats':\n\n    cor, sd, var\n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nDie folgenden Objekte sind maskiert von 'package:base':\n\n    %*%, %in%, &&, ||, apply, as.factor, as.numeric, colnames,\n    colnames<-, ifelse, is.character, is.factor, is.numeric, log,\n    log10, log1p, log2, round, signif, trunc\n```\n\n\n:::\n\n```{.r .cell-code}\n# To launch H2O locally with default initialization arguments, use the following: \nh2o.init()\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n\nH2O is not running yet, starting it now...\n\nNote:  In case of errors look at the following log files:\n    C:\\Users\\luke3\\AppData\\Local\\Temp\\RtmpA5f9eo\\file1c9412175e01/h2o_luke3_started_from_r.out\n    C:\\Users\\luke3\\AppData\\Local\\Temp\\RtmpA5f9eo\\file1c942e327401/h2o_luke3_started_from_r.err\n\n\nStarting H2O JVM and connecting:  Connection successful!\n\nR is connected to the H2O cluster: \n    H2O cluster uptime:         4 seconds 656 milliseconds \n    H2O cluster timezone:       Europe/Berlin \n    H2O data parsing timezone:  UTC \n    H2O cluster version:        3.44.0.3 \n    H2O cluster version age:    5 months and 22 days \n    H2O cluster name:           H2O_started_from_R_luke3_ahe753 \n    H2O cluster total nodes:    1 \n    H2O cluster total memory:   2.97 GB \n    H2O cluster total cores:    8 \n    H2O cluster allowed cores:  8 \n    H2O cluster healthy:        TRUE \n    H2O Connection ip:          localhost \n    H2O Connection port:        54321 \n    H2O Connection proxy:       NA \n    H2O Internal Security:      FALSE \n    R Version:                  R version 4.4.0 (2024-04-24 ucrt) \n```\n\n\n:::\n\n::: {.cell-output .cell-output-stderr}\n\n```\nWarning in h2o.clusterInfo(): \nYour H2O cluster version is (5 months and 22 days) old. There may be a newer version available.\nPlease download and install the latest version from: https://h2o-release.s3.amazonaws.com/h2o/latest_stable.html\n```\n\n\n:::\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}
