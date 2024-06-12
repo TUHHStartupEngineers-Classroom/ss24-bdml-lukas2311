@@ -1,0 +1,17 @@
+---
+title: "Challenge3_Automated_ML_1and2"
+author: "LukasMackel"
+date: "2024-06-11"
+output: html_document
+---
+
+# Part 1
+Setup h2o :
+
+```{r}
+library(h2o)
+
+# To launch H2O locally with default initialization arguments, use the following: 
+h2o.init()
+```
+
