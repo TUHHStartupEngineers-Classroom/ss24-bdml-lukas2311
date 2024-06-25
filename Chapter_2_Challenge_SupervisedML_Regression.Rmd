@@ -1,0 +1,154 @@
+---
+title: "Challenge_2_SupervisedMLRegr"
+author: "LukasMackel"
+date: "2024-06-11"
+output: html_document
+---
+This is the Markdown for the second Challenge in SuperVisedML Regression 2:
+
+```{r}
+#see manual
+# Standard
+library(tidyverse)
+
+# Modeling
+library(parsnip)
+
+# Preprocessing & Sampling
+library(recipes)
+library(rsample)
+
+# Modeling Error Metrics
+library(yardstick)
+
+# Plotting Decision Trees
+library(rpart.plot)
+
+```
+
+```{r}
+#First the modeling from the lecture document
+# Modeling ----------------------------------------------------------------
+bike_orderlines_tbl <- readRDS("bike_orderlines.rds")
+glimpse(bike_orderlines_tbl)
+
+model_sales_tbl <- bike_orderlines_tbl %>%
+  select(total_price, model, category_2, frame_material) %>%
+  
+  group_by(model, category_2, frame_material) %>%
+  summarise(total_sales = sum(total_price)) %>%
+  ungroup() %>%
+  
+  arrange(desc(total_sales))
+
+model_sales_tbl %>%
+  mutate(category_2 = as_factor(category_2) %>% 
+           fct_reorder(total_sales, .fun = max) %>% 
+           fct_rev()) %>%
+  
+  ggplot(aes(frame_material, total_sales)) +
+  geom_violin() +
+  geom_jitter(width = 0.1, alpha = 0.5, color = "#2c3e50") +
+  #coord_flip() +
+  facet_wrap(~ category_2) +
+  scale_y_continuous(labels = scales::dollar_format(scale = 1e-6, suffix = "M", accuracy = 0.1)) +
+  tidyquant::theme_tq() +
+  labs(
+    title = "Total Sales for Each Model",
+    x = "Frame Material", y = "Revenue"
+  )
+```
+
+
+```{r}
+
+# loading data samples
+bike_features_tbl <- readRDS("~/bike_features_tbl.rds")
+glimpse(bike_features_tbl)
+
+# 2.0 TRAINING & TEST SETS ----
+bike_features_tbl <- bike_features_tbl %>% 
+  
+  mutate(id = row_number()) %>% 
+  
+  select(id, everything(), -url)
+
+```
+
+```{r}
+bike_features_tbl %>% distinct(category_2)
+
+# run both following commands at the same time
+set.seed(seed = 1113)
+split_obj <- rsample::initial_split(bike_features_tbl, prop   = 0.80, 
+                                                       strata = "category_2")
+
+# Check if testing contains all category_2 values
+split_obj %>% training() %>% distinct(category_2)
+split_obj %>% testing() %>% distinct(category_2)
+
+# Assign training and test data
+train_tbl <- training(split_obj)
+test_tbl  <- testing(split_obj)
+
+# We have to remove spaces and dashes from the column names
+train_tbl <- train_tbl %>% set_names(str_replace_all(names(train_tbl), " |-", "_"))
+test_tbl  <- test_tbl  %>% set_names(str_replace_all(names(test_tbl),  " |-", "_"))
+```
+
+```{r}
+# 3.1.1 Model ----
+?lm # from the stats package
+?set_engine
+?fit # then click Estimate model parameters and then fit at the bottom
+
+model_01_linear_lm_simple <- linear_reg(mode = "regression") %>%
+    set_engine("lm") %>%
+    fit(price ~ category_2 + frame_material, data = train_tbl)
+```
+
+Above is all partially the parts from the lecture content
+
+----------------------------------------------
+
+Challenge 2::
+The next part will be my solution for the challenge 2 with the recipe package:
+
+First a linear regression model is creates, that is similar to the one created in the manual. Then the recipe is created with the dummy given in the task itself. Then the testing and training data is created
+```{r}
+?recipe
+?step_dummy
+?prep
+?bake
+
+# making a new linear regression model
+model_01_linear_lm_simple <- linear_reg(mode = "regression") %>%
+    set_engine("lm") 
+
+# creating a recipe object
+recipe_obj <- recipe(price ~ frame_material + category_2 + model, data = bike_orderlines_tbl) %>% # function for the price predict from the given variables added
+               #test
+                step_dummy(all_nominal(),-frame_material,-category_2,-model,one_hot = T) %>% # Check out the argument one_hot = T
+                prep() # estimate the required parameters
+
+train_transformed_tbl <- bake(recipe_obj, new_data = train_tbl) # this creates a training data set
+test_transformed_tbl  <- bake(recipe_obj, new_data = test_tbl) # this creates a testing data set
+
+# including the workflow package
+library(workflows)
+# first create a workflow
+workflow <- workflow(preprocessor = NULL, spec = NULL) %>% 
+  workflows::add_recipe(recipe_obj) %>% # adding the created recipe object from before
+  workflows::add_model(model_01_linear_lm_simple) # adding the created model from before
+
+# now fit the workflow:
+wf_fit <- fit(workflow, train_transformed_tbl) # this estimates the model param. of the training set
+
+# now the yardstick part: 
+
+metrics <- wf_fit %>%
+           predict(new_data = test_transformed_tbl) %>% #predict from the testing data set from above
+           bind_cols(test_transformed_tbl %>% select(price)) %>%
+           yardstick::metrics(truth = price, estimate = .pred) %>% print() # and then print the yardstick metrics
+
+``` 
